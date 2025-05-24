@@ -1,0 +1,393 @@
+body {
+    font-family: 'Arial', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #f0f2f5;
+    margin: 0;
+}
+
+.pos-container {
+    display: flex;
+    width: 95%; /* 画面幅に応じて少し広めに */
+    max-width: 1280px; /* 最大幅を設定 */
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    min-height: 600px; /* 最小高さを設定、コンテンツが少ない場合でも見栄えを保つ */
+}
+
+/* 注文リストパネル */
+.order-panel { /* Changed from .order-list-panel to .order-panel to match index-v3.html */
+    width: 35%; /* 相対幅 */
+    min-width: 300px; /* 最小幅 */
+    padding: 20px;
+    border-right: 1px solid #eee;
+    display: flex;
+    flex-direction: column;
+}
+
+.order-title { /* Changed from .panel-title to .order-title to match index-v3.html */
+    font-size: 1.8em;
+    margin-top: 0;
+    margin-bottom: 20px;
+    color: #333;
+    border-bottom: 2px solid #eee;
+    padding-bottom: 10px;
+}
+
+.order-list { /* Changed from .order-items to .order-list to match index-v3.html */
+    flex-grow: 1;
+    overflow-y: auto;
+    margin-bottom: 20px;
+}
+
+.order-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px dashed #eee;
+}
+
+.item-name {
+    font-size: 1.1em;
+    font-weight: bold;
+    color: #555;
+    flex-grow: 1; /* 名前が長い場合にスペースを広げる */
+}
+
+.item-quantity-control {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    flex-shrink: 0; /* 縮まないようにする */
+}
+
+.quantity-button {
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.2em;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.quantity-button:hover {
+    background-color: #e0e0e0;
+}
+
+.quantity-display {
+    width: 30px;
+    text-align: center;
+    font-weight: bold;
+    font-size: 1.1em;
+    color: #333;
+}
+
+.order-summary {
+    font-size: 1.5em;
+    font-weight: bold;
+    text-align: right;
+    padding-top: 15px;
+    border-top: 2px solid #eee;
+    margin-top: auto; /* 下部に固定 */
+}
+
+.action-buttons { /* Changed from .order-actions to .action-buttons to match index-v3.html */
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.btn { /* Changed from .action-button to .btn to match index-v3.html */
+    flex: 1;
+    padding: 15px 20px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.2em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.1s;
+}
+
+.btn:active { /* Changed from .action-button:active to .btn:active to match index-v3.html */
+    transform: translateY(1px);
+}
+
+.btn-cancel { /* Changed from .cancel-button to .btn-cancel to match index-v3.html */
+    background-color: #ff6b6b;
+    color: white;
+    margin-right: 10px;
+}
+
+.btn-cancel:hover { /* Changed from .cancel-button:hover to .btn-cancel:hover to match index-v3.html */
+    background-color: #e05c5c;
+}
+
+.btn-pay { /* Changed from .checkout-button to .btn-pay to match index-v3.html */
+    background-color: #4CAF50; /* Green */
+    color: white;
+    margin-left: 10px;
+}
+
+.btn-pay:hover { /* Changed from .checkout-button:hover to .btn-pay:hover to match index-v3.html */
+    background-color: #45a049;
+}
+
+
+/* 商品選択パネル */
+.menu-panel { /* Changed from .product-selection-panel to .menu-panel to match index-v3.html */
+    width: 65%; /* 相対幅 */
+    min-width: 500px; /* 最小幅。これ以上小さくならないように */
+    padding: 10px; /* 全体のパディングを調整 */
+    display: flex; /* Flexboxで縦に並べる */
+    flex-direction: column;
+    gap: 10px; /* 各行（product-group）間の隙間 */
+}
+
+.product-group {
+    display: grid; /* Gridレイアウトを適用 */
+    /* 5列固定: すべての列を均等な幅 (1fr) にする */
+    grid-template-columns: repeat(5, 1fr);
+    gap: 10px; /* ボタン間の隙間 */
+    flex-shrink: 0; /* 縮まないようにする */
+}
+
+
+.product-category-button,
+.product-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 0.95em; /* 共通のフォントサイズに調整 */
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s, box-shadow 0.2s;
+    aspect-ratio: 1 / 1; /* 正方形を維持 */
+    text-align: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    color: #333;
+    white-space: nowrap; /* テキストが折り返さないように */
+    overflow: hidden; /* はみ出るテキストを隠す */
+    text-overflow: ellipsis; /* はみ出る場合に...を表示 */
+    padding: 5px; /* テキストとボーダーの間の余白 */
+    min-width: 60px; /* ボタンの最小幅 */
+}
+
+.product-category-button {
+    color: white;
+    box-shadow: none; /* カテゴリボタンは影なし */
+    border: none;
+    /* font-size: 1.1em; /* カテゴリボタンは少し大きめに -> 削除またはコメントアウト */
+    flex-shrink: 0;
+}
+
+/* カテゴリボタンの色 */
+.product-category-button.red {
+    background-color: #ff6b6b;
+}
+.product-category-button.blue {
+    background-color: #4a90e2;
+}
+.product-category-button.orange {
+    background-color: #f5a623;
+}
+.product-category-button.green {
+    background-color: #7ed321;
+}
+
+.product-button:hover {
+    background-color: #eef;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* 空のボタンのスタイル */
+.product-button.empty {
+    border: none;
+    box-shadow: none;
+    cursor: default;
+    background-color: transparent;
+}
+.product-button.empty.transparent {
+    background-color: transparent;
+    border: none;
+    box-shadow: none;
+}
+.product-button.empty:hover {
+    background-color: transparent;
+    box-shadow: none;
+}
+
+/* 支払い画面 */
+.payment-screen { /* Added to control visibility of payment screen */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.payment-screen.hidden { /* Added for hiding the payment screen */
+    display: none;
+}
+
+.payment-container { /* Added for the payment container */
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+    width: 90%;
+    max-width: 500px;
+    text-align: center;
+}
+
+.payment-total { /* Added for the total amount display in payment screen */
+    font-size: 2em;
+    margin-bottom: 25px;
+    color: #333;
+}
+
+.payment-details { /* Added for received and change amount display in payment screen */
+    margin-bottom: 20px;
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #555;
+}
+
+.number-pad { /* Added for the number pad */
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.num-key { /* Added for number pad keys */
+    background-color: #f0f0f0;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 20px 0;
+    font-size: 1.8em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.1s;
+}
+
+.num-key:hover {
+    background-color: #e0e0e0;
+}
+
+.num-key:active {
+    transform: translateY(1px);
+}
+
+.payment-actions { /* Added for payment action buttons */
+    display: flex;
+    justify-content: space-between;
+    margin-top: 30px;
+}
+
+.payment-btn { /* Added for general payment buttons */
+    flex: 1;
+    padding: 15px 20px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.2em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.1s;
+}
+
+.payment-btn:active {
+    transform: translateY(1px);
+}
+
+.btn-cancel-payment { /* Added for cancel button in payment screen */
+    background-color: #ff6b6b;
+    color: white;
+    margin-right: 10px;
+}
+
+.btn-cancel-payment:hover {
+    background-color: #e05c5c;
+}
+
+.btn-complete { /* Added for complete payment button */
+    background-color: #4CAF50;
+    color: white;
+    margin-left: 10px;
+}
+
+.btn-complete:hover {
+    background-color: #45a049;
+}
+
+
+/* レスポンシブ対応 */
+@media (max-width: 800px) {
+    .pos-container {
+        flex-direction: column; /* 画面が狭くなったら縦並びにする */
+        width: 100%;
+        height: 100vh; /* 縦いっぱいに広げる */
+        border-radius: 0;
+        box-shadow: none;
+    }
+
+    .order-panel, /* Changed from .order-list-panel to .order-panel */
+    .menu-panel { /* Changed from .product-selection-panel to .menu-panel */
+        width: 100%; /* 全幅を使う */
+        min-width: unset; /* 最小幅を解除 */
+        padding: 15px;
+        border-right: none;
+        border-bottom: 1px solid #eee; /* 下に境界線 */
+    }
+
+    .order-panel { /* Changed from .order-list-panel to .order-panel */
+        height: 35vh; /* 注文リストの高さを固定 */
+        flex-shrink: 0; /* 縮まない */
+    }
+    .order-list { /* Changed from .order-items to .order-list */
+        height: calc(100% - 150px); /* 親要素の高さから、タイトルとサマリーとアクションの高さを引く */
+    }
+
+    .menu-panel { /* Changed from .product-selection-panel to .menu-panel */
+        flex-grow: 1; /* 残りのスペースを使う */
+        overflow-y: auto; /* スクロール可能にする */
+    }
+
+    .product-group {
+        /* スマートフォンではすべて2列に */
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .product-category-button {
+        grid-column: span 2; /* カテゴリボタンは2列分使う */
+        font-size: 1.1em; /* スマホでのフォントサイズ調整 */
+    }
+    .product-button.empty {
+        display: none; /* スマホ表示では空ボタンは非表示 */
+    }
+}
+
+@media (max-width: 480px) {
+    .product-group {
+        grid-template-columns: 1fr; /* 非常に狭い画面では1列に */
+    }
+    .product-category-button {
+        grid-column: span 1; /* カテゴリボタンも1列に */
+        font-size: 1.1em; /* スマホでのフォントサイズ調整 */
+    }
+}
