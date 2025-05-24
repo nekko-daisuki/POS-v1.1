@@ -1,184 +1,99 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const orderItemsContainer = document.getElementById('order-items');
-    const totalItemsSpan = document.getElementById('total-items');
-    const totalAmountSpan = document.getElementById('total-amount');
-    const productButtons = document.querySelectorAll('.product-button');
-    const cancelButton = document.getElementById('cancel-order');
-    const goToCheckoutButton = document.getElementById('go-to-checkout');
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>POSレジシステム</title>
+    <link rel="stylesheet" href="style-v3.css">
+</head>
+<body>
+    <div class="pos-container">
+        <div class="order-panel">
+            <h2 class="order-title">注文リスト</h2>
+            <div class="order-list" id="orderList">
+            </div>
+            <div class="order-summary" id="orderSummary">
+                0点 合計 ¥0
+            </div>
+            <div class="action-buttons">
+                <button class="btn btn-cancel" id="cancelOrderBtn">取り消し</button>
+                <button class="btn btn-pay" id="paymentBtn">支払いへ</button>
+            </div>
+        </div>
+        <div class="menu-panel">
+            <div class="product-group">
+                <button class="product-category-button red" data-category="コーヒー">コーヒー</button>
+                <button class="product-button" data-item-id="lightRoast">浅煎り</button>
+                <button class="product-button" data-item-id="darkRoast">深煎り</button>
+                <button class="product-button" data-item-id="premium">プレミアム</button>
+                <button class="product-button" data-item-id="decaf">デカフェ</button>
+            </div>
+            
+            <div class="product-group">
+                <button class="product-button empty"></button> 
+                <button class="product-button" data-item-id="iceCoffee">アイス</button>
+                <button class="product-button" data-item-id="iceLatte">アイスオレ</button>
+                <button class="product-button empty"></button>
+                <button class="product-button empty"></button>
+            </div>
 
-    const checkoutOverlay = document.getElementById('checkout-overlay');
-    const modalTotalAmountSpan = document.getElementById('modal-total-amount');
-    const tenderedAmountInput = document.getElementById('tendered-amount');
-    const keypad = document.getElementById('keypad');
-    const changeAmountSpan = document.getElementById('change-amount');
-    const cancelCheckoutButton = document.getElementById('cancel-checkout');
-    const confirmCheckoutButton = document.getElementById('confirm-checkout');
+            <div class="product-group">
+                <button class="product-category-button blue" data-category="softDrink">ソフトドリンク</button>
+                <button class="product-button" data-item-id="lemonade">レモネード</button>
+                <button class="product-button" data-item-id="appleJuice">アップル</button>
+                <button class="product-button" data-item-id="icedTea">アイスティ</button>
+                <button class="product-button" data-item-id="milk">ミルク</button>
+            </div>
 
-    let currentOrder = []; // { id: 'lightRoast', name: '浅煎り', price: 200, quantity: 1 } の形式で保存
-    const products = {
-        // コーヒー
-        lightRoast: { name: '浅煎り', price: 200 },
-        darkRoast: { name: '深煎り', price: 220 },
-        premium: { name: 'プレミアム', price: 300 },
-        decaf: { name: 'デカフェ', price: 250 },
-        ice: { name: 'アイス', price: 50 },
-        iceLatte: { name: 'アイスオレ', price: 280 },
-        // ソフトドリンク
-        lemonade: { name: 'レモネード', price: 180 },
-        appleJuice: { name: 'アップル', price: 150 },
-        icedTea: { name: 'アイスティ', price: 170 },
-        milk: { name: 'ミルク', price: 120 },
-        // フード
-        chocolate: { name: 'チョコレート', price: 100 },
-        cookie: { name: 'クッキー', price: 80 },
-        madeleine: { name: 'マドレーヌ', price: 130 },
-        financier: { name: 'フィナンシェ', price: 150 },
-        // その他
-        dip: { name: 'ディップ', price: 30 },
-        dipx5: { name: 'ディップ ×5', price: 120 },
-        sticker: { name: 'ステッカー', price: 50 },
-    };
+            <div class="product-group">
+                <button class="product-category-button orange" data-category="food">フード</button>
+                <button class="product-button" data-item-id="chocolate">チョコ</button>
+                <button class="product-button" data-item-id="cookie">クッキー</button>
+                <button class="product-button" data-item-id="madeleine">マドレーヌ</button>
+                <button class="product-button" data-item-id="financier">フィナンシェ</button>
+            </div>
 
-    // 注文リストをレンダリングする関数
-    function renderOrderList() {
-        orderItemsContainer.innerHTML = ''; // 一度クリア
-        let totalItems = 0;
-        let totalAmount = 0;
+            <div class="product-group">
+                <button class="product-category-button green" data-category="other">その他</button>
+                <button class="product-button" data-item-id="dip">ディップ</button>
+                <button class="product-button" data-item-id="dipx5">ディップ ×5</button>
+                <button class="product-button" data-item-id="sticker">ステッカー</button>
+                <button class="product-button empty"></button>
+            </div>
+        </div>
+    </div>
 
-        currentOrder.forEach(item => {
-            const product = products[item.id];
-            if (!product) return; // 商品が存在しない場合はスキップ
+    <!-- 支払い画面 (最初は非表示) -->
+    <div class="payment-screen hidden" id="paymentScreen">
+        <div class="payment-container grid-background">
+            <div class="payment-total" id="paymentTotal">
+                合計 ¥0
+            </div>
+            <div class="payment-details">
+                <div>預かり金額 <span id="receivedAmount">¥0</span></div>
+                <!-- <div>お釣り <span id="changeAmount">¥0</span></div> -->
+            </div>
+            <div class="number-pad">
+                <button class="num-key">7</button>
+                <button class="num-key">8</button>
+                <button class="num-key">9</button>
+                <button class="num-key">4</button>
+                <button class="num-key">5</button>
+                <button class="num-key">6</button>
+                <button class="num-key">1</button>
+                <button class="num-key">2</button>
+                <button class="num-key">3</button>
+                <button class="num-key">C</button>
+                <button class="num-key">0</button>
+                <button class="num-key">00</button>
+            </div>
+            <div class="payment-actions">
+                <button class="payment-btn btn-cancel-payment" id="cancelPaymentBtn">取り消し</button>
+                <button class="payment-btn btn-complete" id="completeBtn">会計する</button>
+            </div>
+        </div>
+    </div>
 
-            const orderItemDiv = document.createElement('div');
-            orderItemDiv.classList.add('order-item');
-            orderItemDiv.innerHTML = `
-                <span class="item-name">${product.name}</span>
-                <div class="item-quantity-control">
-                    <button class="quantity-button decrease" data-item-id="${item.id}">-</button>
-                    <span class="quantity-display">${item.quantity}</span>
-                    <button class="quantity-button increase" data-item-id="${item.id}">+</button>
-                </div>
-            `;
-            orderItemsContainer.appendChild(orderItemDiv);
-
-            totalItems += item.quantity;
-            totalAmount += product.price * item.quantity;
-        });
-
-        totalItemsSpan.textContent = totalItems;
-        totalAmountSpan.textContent = `￥${totalAmount}`;
-        modalTotalAmountSpan.textContent = totalAmount; // 支払いモーダルにも反映
-        calculateChange(); // お釣りの再計算
-    }
-
-    // 商品追加・数量変更のハンドラ
-    productButtons.forEach(button => {
-        button.addEventListener('click', (event) => {
-            const itemId = event.target.dataset.itemId;
-            const product = products[itemId];
-
-            if (product) {
-                const existingItemIndex = currentOrder.findIndex(item => item.id === itemId);
-                if (existingItemIndex > -1) {
-                    currentOrder[existingItemIndex].quantity++;
-                } else {
-                    currentOrder.push({ id: itemId, quantity: 1 });
-                }
-                renderOrderList();
-            }
-        });
-    });
-
-    // 注文リスト内の数量変更ボタンのハンドラ（イベント委譲）
-    orderItemsContainer.addEventListener('click', (event) => {
-        const target = event.target;
-        if (target.classList.contains('quantity-button')) {
-            const itemId = target.dataset.itemId;
-            const existingItemIndex = currentOrder.findIndex(item => item.id === itemId);
-
-            if (existingItemIndex > -1) {
-                if (target.classList.contains('increase')) {
-                    currentOrder[existingItemIndex].quantity++;
-                } else if (target.classList.contains('decrease')) {
-                    currentOrder[existingItemIndex].quantity--;
-                    if (currentOrder[existingItemIndex].quantity <= 0) {
-                        currentOrder.splice(existingItemIndex, 1); // 0以下になったら削除
-                    }
-                }
-                renderOrderList();
-            }
-        }
-    });
-
-    // 「取り消し」ボタン
-    cancelButton.addEventListener('click', () => {
-        currentOrder = []; // 注文をクリア
-        renderOrderList();
-        alert('注文が取り消されました。');
-    });
-
-    // 「支払いへ」ボタン
-    goToCheckoutButton.addEventListener('click', () => {
-        if (currentOrder.length === 0) {
-            alert('注文がありません。');
-            return;
-        }
-        tenderedAmountInput.value = ''; // 預かり金額をクリア
-        calculateChange(); // お釣りを初期化
-        checkoutOverlay.classList.add('active'); // ポップアップ表示
-    });
-
-    // 支払いモーダル内のキーパッド
-    keypad.addEventListener('click', (event) => {
-        const key = event.target.dataset.key;
-        let currentValue = tenderedAmountInput.value;
-
-        if (key === 'clear') {
-            tenderedAmountInput.value = '';
-        } else if (key) {
-            // 数字のみ追加
-            if (currentValue.length < 9) { // 桁数制限
-                tenderedAmountInput.value += key;
-            }
-        }
-        calculateChange();
-    });
-
-    // お釣りの計算
-    function calculateChange() {
-        const total = parseFloat(modalTotalAmountSpan.textContent) || 0;
-        const tendered = parseFloat(tenderedAmountInput.value) || 0;
-        const change = tendered - total;
-        changeAmountSpan.textContent = change >= 0 ? `￥${change}` : `￥0`; // お釣りがマイナスの場合は0を表示
-        confirmCheckoutButton.disabled = (change < 0 || tendered === 0); // お釣りがマイナスまたは預かり金額が0の場合は会計ボタンを無効化
-    }
-
-    // 預かり金額入力欄の値変更を監視
-    tenderedAmountInput.addEventListener('input', calculateChange);
-
-
-    // 支払いモーダル「取り消し」ボタン
-    cancelCheckoutButton.addEventListener('click', () => {
-        checkoutOverlay.classList.remove('active'); // ポップアップを非表示
-    });
-
-    // 支払いモーダル「会計する」ボタン
-    confirmCheckoutButton.addEventListener('click', () => {
-        const total = parseFloat(modalTotalAmountSpan.textContent) || 0;
-        const tendered = parseFloat(tenderedAmountInput.value) || 0;
-        const change = tendered - total;
-
-        if (change < 0) {
-            alert('金額が不足しています。');
-            return;
-        }
-
-        alert(`会計が完了しました！\n合計: ￥${total}\n預かり: ￥${tendered}\nお釣り: ￥${change}`);
-        currentOrder = []; // 注文をクリア
-        renderOrderList();
-        checkoutOverlay.classList.remove('active'); // ポップアップを非表示
-    });
-
-    // 初期表示
-    renderOrderList();
-});
+    <script src="script-v3.js"></script>
+</body>
+</html>
