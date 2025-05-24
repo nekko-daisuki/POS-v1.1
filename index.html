@@ -3,27 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>学祭POSレジ</title>
-    <link rel="stylesheet" href="style.css">
+    <title>POSレジシステム</title>
+    <link rel="stylesheet" href="style-v3.css">
 </head>
 <body>
     <div class="pos-container">
-        <div class="order-list-panel">
-            <h2 class="panel-title">注文リスト</h2>
-            <div class="order-items" id="order-items">
-                </div>
-            <div class="order-summary">
-                <span id="total-items">0</span>点 合計 <span id="total-amount">￥0</span>
+        <div class="order-panel">
+            <h2 class="order-title">注文リスト</h2>
+            <div class="order-list" id="orderList">
             </div>
-            <div class="order-actions">
-                <button class="action-button cancel-button" id="cancel-order">取り消し</button>
-                <button class="action-button checkout-button" id="go-to-checkout">支払いへ</button>
+            <div class="order-summary" id="orderSummary">
+                0点 合計 ¥0
+            </div>
+            <div class="action-buttons">
+                <button class="btn btn-cancel" id="cancelOrderBtn">取り消し</button>
+                <button class="btn btn-pay" id="paymentBtn">支払いへ</button>
             </div>
         </div>
-
-        <div class="product-selection-panel">
+        <div class="menu-panel">
             <div class="product-group">
-                <button class="product-category-button red" data-category="coffee">コーヒー</button>
+                <button class="product-category-button red" data-category="コーヒー">コーヒー</button>
                 <button class="product-button" data-item-id="lightRoast">浅煎り</button>
                 <button class="product-button" data-item-id="darkRoast">深煎り</button>
                 <button class="product-button" data-item-id="premium">プレミアム</button>
@@ -32,14 +31,14 @@
             
             <div class="product-group">
                 <button class="product-button empty"></button> 
-                <button class="product-button" data-item-id="ice">アイス</button>
+                <button class="product-button" data-item-id="iceCoffee">アイス</button>
                 <button class="product-button" data-item-id="iceLatte">アイスオレ</button>
                 <button class="product-button empty"></button>
                 <button class="product-button empty"></button>
             </div>
 
             <div class="product-group">
-                <button class="product-category-button blue" data-category="softdrink">ソフトドリンク</button>
+                <button class="product-category-button blue" data-category="softDrink">ソフトドリンク</button>
                 <button class="product-button" data-item-id="lemonade">レモネード</button>
                 <button class="product-button" data-item-id="appleJuice">アップル</button>
                 <button class="product-button" data-item-id="icedTea">アイスティ</button>
@@ -59,41 +58,42 @@
                 <button class="product-button" data-item-id="dip">ディップ</button>
                 <button class="product-button" data-item-id="dipx5">ディップ ×5</button>
                 <button class="product-button" data-item-id="sticker">ステッカー</button>
-                <button class="product-button empty"></button> </div>
-        </div>
-    </div>
-
-    <div class="overlay" id="checkout-overlay">
-        <div class="checkout-modal">
-            <h2 class="modal-title">合計 ￥<span id="modal-total-amount">0</span></h2>
-            <div class="input-group">
-                <label for="tendered-amount">預かり金額 ￥</label>
-                <input type="text" id="tendered-amount" class="amount-input" readonly>
-            </div>
-            <div class="keypad" id="keypad">
-                <button class="keypad-button" data-key="1">1</button>
-                <button class="keypad-button" data-key="2">2</button>
-                <button class="keypad-button" data-key="3">3</button>
-                <button class="keypad-button" data-key="4">4</button>
-                <button class="keypad-button" data-key="5">5</button>
-                <button class="keypad-button" data-key="6">6</button>
-                <button class="keypad-button" data-key="7">7</button>
-                <button class="keypad-button" data-key="8">8</button>
-                <button class="keypad-button" data-key="9">9</button>
-                <button class="keypad-button large" data-key="00">00</button>
-                <button class="keypad-button" data-key="0">0</button>
-                <button class="keypad-button clear" data-key="clear">C</button>
-            </div>
-            <div class="change-display">
-                お釣り ￥<span id="change-amount">0</span>
-            </div>
-            <div class="modal-actions">
-                <button class="action-button cancel-button" id="cancel-checkout">取り消し</button>
-                <button class="action-button confirm-button" id="confirm-checkout">会計する</button>
+                <button class="product-button empty"></button>
             </div>
         </div>
     </div>
 
-    <script src="script.js"></script>
+    <!-- 支払い画面 (最初は非表示) -->
+    <div class="payment-screen hidden" id="paymentScreen">
+        <div class="payment-container grid-background">
+            <div class="payment-total" id="paymentTotal">
+                合計 ¥0
+            </div>
+            <div class="payment-details">
+                <div>預かり金額 <span id="receivedAmount">¥0</span></div>
+                <!-- <div>お釣り <span id="changeAmount">¥0</span></div> -->
+            </div>
+            <div class="number-pad">
+                <button class="num-key">7</button>
+                <button class="num-key">8</button>
+                <button class="num-key">9</button>
+                <button class="num-key">4</button>
+                <button class="num-key">5</button>
+                <button class="num-key">6</button>
+                <button class="num-key">1</button>
+                <button class="num-key">2</button>
+                <button class="num-key">3</button>
+                <button class="num-key">C</button>
+                <button class="num-key">0</button>
+                <button class="num-key">00</button>
+            </div>
+            <div class="payment-actions">
+                <button class="payment-btn btn-cancel-payment" id="cancelPaymentBtn">取り消し</button>
+                <button class="payment-btn btn-complete" id="completeBtn">会計する</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script-v3.js"></script>
 </body>
 </html>
